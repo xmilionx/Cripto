@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0e11">
+<title>Crypto Panel</title>
+<style>
+:root {
+  --bg: #0b0e11;
+  --panel: #181a20;
+  --hover: #1f2329;
+  --line: #2b3139;
+  --text: #eaecef;
+  --muted: #848e9c;
+  --up: #0ecb81;
+  --down: #f6465d;
+  --accent: #fcd535;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--panel);
+}
+
+.controls {
+  display: flex;
+  gap: 10px;
+}
+
+input,
+select {
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  outline: none;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+input {
+  width: 260px;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--accent);
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+}
+
+h1 {
+  font-size: 28px;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 6px 0 24px;
+  color: var(--muted);
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  padding: 14px 16px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  white-space: nowrap;
+}
+
+td {
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.num {
+  text-align: right;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+tbody tr {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+tbody tr:hover {
+  background: var(--hover);
+}
+
+tbody tr:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.coin {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.coin img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.coin b {
+  display: block;
+  font-weight: 600;
+}
+
+.coin span {
+  color: var(--muted);
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.up {
+  color: var(--up);
+}
+
+.down {
+  color: var(--down);
+}
+
+.status {
+  padding: 24px;
+  color: var(--muted);
+  text-align: center;
+}
+
+dialog {
+  width: min(760px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  color: var(--text);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+}
+
+.sheet {
+  padding: 24px;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.head .coin img {
+  width: 44px;
+  height: 44px;
+}
+
+.close {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: var(--text);
+}
+
+.price {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 20px 0 16px;
+}
+
+.price strong {
+  font-size: 34px;
+  letter-spacing: -0.02em;
+}
+
+.price em {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.ranges {
+  display: flex;
+  gap: 4px;
+}
+
+.ranges button {
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ranges button:hover {
+  color: var(--text);
+}
+
+.ranges .on {
+  background: var(--line);
+  color: var(--accent);
+}
+
+.chart {
+  position: relative;
+  height: 280px;
+  margin: 12px 0 24px;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--muted);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.tip b {
+  color: var(--text);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--line);
+}
+
+.stats div {
+  padding: 14px 16px;
+  background: var(--panel);
+}
+
+dt {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+dd {
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .wide {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  input {
+    flex: 1;
+    width: auto;
+  }
+
+  .page {
+    padding: 24px 16px 40px;
+  }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="mark">₿</span>Crypto Panel</div>
+  <div class="controls">
+    <input id="search" type="search" placeholder="Търсене на криптовалута" aria-label="Търсене" autocomplete="off">
+    <select id="currency" aria-label="Валута">
+      <option value="usd">USD</option>
+      <option value="eur">EUR</option>
+      <option value="gbp">GBP</option>
+      <option value="chf">CHF</option>
+      <option value="jpy">JPY</option>
+      <option value="cad">CAD</option>
+      <option value="aud">AUD</option>
+      <option value="try">TRY</option>
+      <option value="pln">PLN</option>
+    </select>
+  </div>
+</header>
+<main class="page">
+  <h1>Пазар на криптовалути</h1>
+  <p class="subtitle">Топ 100 по пазарна капитализация</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Име</th>
+          <th class="num">Цена</th>
+          <th class="num">24ч</th>
+          <th class="num wide">Обем (24ч)</th>
+          <th class="num wide">Пазарна капитализация</th>
+          <th class="wide">Последни 7 дни</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <p id="status" class="status">Зареждане на пазара...</p>
+</main>
+<dialog id="detail"></dialog>
+<script>
+const API = 'https://api.coingecko.com/api/v3';
+const RANGES = [['1', '24ч'], ['7', '7д'], ['30', '30д'], ['365', '1г']];
+
+const rows = document.querySelector('#rows');
+const notice = document.querySelector('#status');
+const search = document.querySelector('#search');
+const select = document.querySelector('#currency');
+const detail = document.querySelector('#detail');
+
+let coins = [];
+let chart = [];
+let quote = select.value;
+
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const dir = value => (value >= 0 ? 'up' : 'down');
+const pct = value => `${value >= 0 ? '+' : ''}${(value ?? 0).toFixed(2)}%`;
+const num = value => (value == null ? '—' : new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 }).format(value));
+
+const money = (value, compact = false) => new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: quote.toUpperCase(),
+  notation: compact ? 'compact' : 'standard',
+  maximumFractionDigits: compact || value >= 1 ? 2 : 6
+}).format(value);
+
+const coinCell = coin => `
+  <div class="coin">
+    <img src="${coin.image}" alt="" loading="lazy">
+    <div><b>${coin.name}</b><span>${coin.symbol}</span></div>
+  </div>`;
+
+const spark = prices => {
+  const points = prices.filter((_, index) => index % 4 === 0);
+  const min = Math.min(...points);
+  const span = Math.max(...points) - min || 1;
+  const path = points
+    .map((value, index) => `${((index / (points.length - 1)) * 120).toFixed(1)},${(34 - ((value - min) / span) * 32).toFixed(1)}`)
+    .join(' ');
+  return `<svg class="${dir(points.at(-1) - points[0])}" width="120" height="36" viewBox="0 0 120 36" preserveAspectRatio="none"><polyline points="${path}" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`;
+};
+
+const render = () => {
+  const query = search.value.trim().toLowerCase();
+  const list = coins.filter(coin => coin.name.toLowerCase().includes(query) || coin.symbol.includes(query));
+  rows.innerHTML = list.map(coin => `
+    <tr data-id="${coin.id}" tabindex="0">
+      <td class="muted">${coin.market_cap_rank}</td>
+      <td>${coinCell(coin)}</td>
+      <td class="num">${money(coin.current_price)}</td>
+      <td class="num ${dir(coin.price_change_percentage_24h)}">${pct(coin.price_change_percentage_24h)}</td>
+      <td class="num wide">${money(coin.total_volume, true)}</td>
+      <td class="num wide">${money(coin.market_cap, true)}</td>
+      <td class="wide">${spark(coin.sparkline_in_7d?.price ?? [])}</td>
+    </tr>`).join('');
+  notice.textContent = list.length ? '' : 'Няма намерени криптовалути.';
+};
+
+const load = async () => {
+  try {
+    const response = await fetch(`${API}/coins/markets?vs_currency=${select.value}&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=24h`);
+    if (!response.ok) throw new Error(response.status);
+    coins = await response.json();
+    quote = select.value;
+    render();
+  } catch {
+    select.value = quote;
+    notice.textContent = 'Данните не могат да бъдат заредени. Опитай отново след малко.';
+  }
+};
+
+const drawChart = hover => {
+  const canvas = detail.querySelector('canvas');
+  const tip = detail.querySelector('.tip');
+  const ratio = window.devicePixelRatio || 1;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(ratio, ratio);
+
+  const values = chart.map(point => point[1]);
+  const min = Math.min(...values);
+  const span = Math.max(...values) - min || 1;
+  const x = index => (index / (values.length - 1)) * width;
+  const y = value => height - 16 - ((value - min) / span) * (height - 32);
+  const color = css(values.at(-1) >= values[0] ? '--up' : '--down');
+  const fill = ctx.createLinearGradient(0, 0, 0, height);
+  fill.addColorStop(0, `${color}44`);
+  fill.addColorStop(1, `${color}00`);
+
+  ctx.beginPath();
+  values.forEach((value, index) => (index ? ctx.lineTo(x(index), y(value)) : ctx.moveTo(x(index), y(value))));
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  ctx.lineTo(width, height);
+  ctx.lineTo(0, height);
+  ctx.closePath();
+  ctx.fillStyle = fill;
+  ctx.fill();
+
+  if (hover === undefined) {
+    tip.textContent = '';
+    return;
+  }
+
+  ctx.beginPath();
+  ctx.moveTo(x(hover), 0);
+  ctx.lineTo(x(hover), height);
+  ctx.strokeStyle = css('--line');
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(x(hover), y(values[hover]), 5, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+  const time = new Date(chart[hover][0]).toLocaleString('bg-BG', { dateStyle: 'medium', timeStyle: 'short' });
+  tip.innerHTML = `<b>${money(values[hover])}</b> ${time}`;
+};
+
+const loadChart = async (id, days) => {
+  const tip = detail.querySelector('.tip');
+  tip.textContent = 'Зареждане на графиката...';
+  try {
+    const response = await fetch(`${API}/coins/${id}/market_chart?vs_currency=${quote}&days=${days}`);
+    if (!response.ok) throw new Error(response.status);
+    chart = (await response.json()).prices;
+    drawChart();
+  } catch {
+    chart = [];
+    tip.textContent = 'Графиката не е налична в момента. Опитай отново след малко.';
+  }
+};
+
+const stats = coin => {
+  const symbol = coin.symbol.toUpperCase();
+  return [
+    ['Класация', `#${coin.market_cap_rank}`],
+    ['Пазарна капитализация', money(coin.market_cap, true)],
+    ['Обем (24ч)', money(coin.total_volume, true)],
+    ['Най-висока цена (24ч)', money(coin.high_24h)],
+    ['Най-ниска цена (24ч)', money(coin.low_24h)],
+    ['Рекордна цена', money(coin.ath)],
+    ['В обращение', `${num(coin.circulating_supply)} ${symbol}`],
+    ['Максимално количество', coin.max_supply ? `${num(coin.max_supply)} ${symbol}` : '∞']
+  ];
+};
+
+const openDetail = id => {
+  const coin = coins.find(item => item.id === id);
+  chart = [];
+  detail.dataset.id = id;
+  detail.innerHTML = `
+    <div class="sheet">
+      <div class="head">${coinCell(coin)}<button class="close" aria-label="Затвори">✕</button></div>
+      <div class="price">
+        <strong>${money(coin.current_price)}</strong>
+        <em class="${dir(coin.price_change_percentage_24h)}">${pct(coin.price_change_percentage_24h)}</em>
+      </div>
+      <div class="ranges">${RANGES.map(([days, label], index) => `<button data-days="${days}"${index ? '' : ' class="on"'}>${label}</button>`).join('')}</div>
+      <div class="chart"><canvas></canvas><p class="tip"></p></div>
+      <dl class="stats">${stats(coin).map(([label, value]) => `<div><dt>${label}</dt><dd>${value}</dd></div>`).join('')}</dl>
+    </div>`;
+  detail.showModal();
+  loadChart(id, RANGES[0][0]);
+};
+
+const pick = event => {
+  const row = event.target.closest('tr');
+  if (row) openDetail(row.dataset.id);
+};
+
+rows.addEventListener('click', pick);
+rows.addEventListener('keydown', event => event.key === 'Enter' && pick(event));
+search.addEventListener('input', render);
+
+select.addEventListener('change', () => {
+  notice.textContent = 'Обновяване...';
+  load();
+});
+
+detail.addEventListener('click', event => {
+  if (event.target === detail || event.target.closest('.close')) {
+    detail.close();
+    return;
+  }
+  const button = event.target.closest('[data-days]');
+  if (!button) return;
+  detail.querySelectorAll('[data-days]').forEach(item => item.classList.toggle('on', item === button));
+  loadChart(detail.dataset.id, button.dataset.days);
+});
+
+detail.addEventListener('pointermove', event => {
+  if (event.target.tagName !== 'CANVAS' || !chart.length) return;
+  const box = event.target.getBoundingClientRect();
+  const index = Math.round(((event.clientX - box.left) / box.width) * (chart.length - 1));
+  drawChart(Math.min(chart.length - 1, Math.max(0, index)));
+});
+
+detail.addEventListener('pointerout', event => {
+  if (event.target.tagName === 'CANVAS' && chart.length) drawChart();
+});
+
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>
