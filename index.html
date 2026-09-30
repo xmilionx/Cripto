@@ -43,7 +43,7 @@ body:has(dialog[open]) {
   position: sticky;
   top: 0;
   z-index: 5;
-  padding: 12px 0;
+  padding: 12px var(--gutter);
   background: var(--bg);
 }
 
@@ -52,8 +52,7 @@ input {
   width: 100%;
   height: 48px;
   padding: 0 16px 0 44px;
-  border: solid var(--line);
-  border-width: 1px 0;
+  border: 1px solid var(--line);
   border-radius: 0;
   outline: none;
   appearance: none;
@@ -68,8 +67,8 @@ input {
 }
 
 input:focus {
-  border-color: var(--silver);
-  box-shadow: 0 0 0 3px rgba(213, 218, 226, 0.14);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
 }
 
 .page {
@@ -125,14 +124,14 @@ td svg {
   margin-left: auto;
 }
 
-tbody tr {
+tbody tr[data-id] {
   cursor: pointer;
   outline: none;
   transition: background 0.15s;
 }
 
 @media (hover: hover) {
-  tbody tr:hover {
+  tbody tr[data-id]:hover {
     background: var(--surface-2);
   }
 }
@@ -172,6 +171,36 @@ tbody tr {
   color: var(--muted);
   font-size: 13px;
   text-transform: uppercase;
+}
+
+.bone {
+  display: block;
+  height: 14px;
+  border-radius: 7px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.11) 50%, rgba(255, 255, 255, 0.05) 75%) 0 0 / 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+.skeleton .num .bone {
+  width: 72px;
+  margin-left: auto;
+}
+
+.skeleton .coin i {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.skeleton .coin b {
+  width: 96px;
+}
+
+.skeleton .coin span {
+  width: 40px;
+  height: 10px;
+  margin-top: 6px;
 }
 
 .pill {
@@ -332,6 +361,24 @@ canvas {
   height: 100%;
 }
 
+.chart.loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  border-top-color: var(--silver);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.chart.loading canvas {
+  opacity: 0.25;
+}
+
 .tip {
   position: absolute;
   top: 0;
@@ -353,17 +400,14 @@ canvas {
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--line);
+  gap: 12px;
 }
 
 .stats div {
   min-width: 0;
   padding: 16px 18px;
-  background: var(--bg);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
 }
 
 dt {
@@ -384,8 +428,21 @@ dd {
   }
 }
 
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::after {
     animation: none !important;
     transition: none !important;
   }
@@ -446,7 +503,7 @@ dd {
       <tbody id="rows"></tbody>
     </table>
   </div>
-  <p id="status" class="status">Loading market data…</p>
+  <p id="status" class="status"></p>
 </main>
 <dialog id="detail"></dialog>
 <script>
@@ -506,7 +563,18 @@ const spark = prices => {
   return `<svg class="${dir(points.at(-1) - points[0])}" width="120" height="36" viewBox="0 0 120 36" preserveAspectRatio="none"><polyline points="${path}" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 };
 
+const SKELETON = Array.from({ length: 12 }, () => `
+  <tr class="skeleton">
+    <td class="name"><div class="coin"><i class="bone"></i><div><b class="bone"></b><span class="bone"></span></div></div></td>
+    <td class="num"><span class="bone"></span></td>
+    <td class="num"><span class="bone"></span></td>
+    <td class="num lg"><span class="bone"></span></td>
+    <td class="num md"><span class="bone"></span></td>
+    <td class="num md"><span class="bone"></span></td>
+  </tr>`).join('');
+
 const render = () => {
+  if (!coins.length) return;
   const query = search.value.trim().toLowerCase();
   const list = coins.filter(coin => coin.name.toLowerCase().includes(query) || coin.symbol.includes(query));
   rows.innerHTML = list.map(coin => `
@@ -529,6 +597,7 @@ const load = async () => {
     coins = data.map(coin => ({ ...coin, price_change_percentage_24h: coin.price_change_percentage_24h ?? 0 }));
     render();
   } catch {
+    if (!coins.length) rows.innerHTML = '';
     notice.textContent = 'Unable to load market data. Please try again shortly.';
   }
 };
@@ -625,10 +694,12 @@ const drawChart = hover => {
 };
 
 const loadChart = async () => {
+  const box = detail.querySelector('.chart');
   const tip = detail.querySelector('.tip');
   const request = ++ticket;
   chart = [];
-  tip.textContent = 'Loading chart…';
+  tip.textContent = '';
+  box.classList.add('loading');
   try {
     const path = view.candles ? 'ohlc' : 'market_chart';
     const response = await fetch(`${API}/coins/${view.id}/${path}?vs_currency=${quote}&days=${view.days}`);
@@ -641,6 +712,8 @@ const loadChart = async () => {
     if (request !== ticket) return;
     chart = [];
     tip.textContent = 'Chart is unavailable right now. Please try again shortly.';
+  } finally {
+    if (request === ticket) box.classList.remove('loading');
   }
 };
 
@@ -680,7 +753,7 @@ const openDetail = id => {
 };
 
 const pick = event => {
-  const row = event.target.closest('tr');
+  const row = event.target.closest('tr[data-id]');
   if (row) openDetail(row.dataset.id);
 };
 
@@ -718,6 +791,7 @@ detail.addEventListener('pointerout', event => {
   if (event.target.tagName === 'CANVAS' && chart.length) drawChart();
 });
 
+rows.innerHTML = SKELETON;
 load();
 setInterval(load, 60000);
 </script>
