@@ -1,21 +1,26 @@
 <!DOCTYPE html>
-<html lang="bg">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b0e11">
+<meta name="theme-color" content="#07090c">
 <title>Crypto Panel</title>
 <style>
 :root {
-  --bg: #0b0e11;
-  --panel: #181a20;
-  --hover: #1f2329;
-  --line: #2b3139;
-  --text: #eaecef;
-  --muted: #848e9c;
+  --bg: #07090c;
+  --surface: #0e1218;
+  --surface-2: #151b24;
+  --line: rgba(255, 255, 255, 0.07);
+  --text: #f4f6f8;
+  --muted: #8a94a3;
   --up: #0ecb81;
   --down: #f6465d;
-  --accent: #fcd535;
+  --up-soft: rgba(14, 203, 129, 0.14);
+  --down-soft: rgba(246, 70, 93, 0.14);
+  --gold: #e6c266;
+  --gutter: clamp(16px, 4vw, 32px);
+  --max: 1280px;
+  color-scheme: dark;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
 }
 
@@ -26,8 +31,13 @@
 
 body {
   min-height: 100vh;
-  background: var(--bg);
+  background:
+    radial-gradient(900px 480px at 12% -8%, rgba(230, 194, 102, 0.11), transparent 60%),
+    radial-gradient(800px 460px at 100% 0, rgba(14, 203, 129, 0.07), transparent 55%),
+    var(--bg);
+  background-repeat: no-repeat;
   color: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
 
 body:has(dialog[open]) {
@@ -42,27 +52,31 @@ body:has(dialog[open]) {
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  padding: 14px 24px;
+  padding: 14px max(var(--gutter), calc((100% - var(--max)) / 2 + var(--gutter)));
   border-bottom: 1px solid var(--line);
-  background: var(--bg);
+  background: rgba(7, 9, 12, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-size: 18px;
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .mark {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--panel);
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f6de9a, var(--gold) 55%, #b98d2e);
+  box-shadow: 0 6px 18px rgba(230, 194, 102, 0.25);
+  color: var(--bg);
 }
 
 .controls {
@@ -72,47 +86,134 @@ body:has(dialog[open]) {
 
 input,
 select {
-  height: 38px;
-  padding: 0 12px;
+  height: 42px;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 12px;
   outline: none;
-  background: var(--panel);
+  background-color: var(--surface);
   color: var(--text);
   font: inherit;
   font-size: 14px;
+  transition: border-color 0.15s;
 }
 
 input {
-  width: 260px;
+  width: 280px;
+  padding: 0 14px 0 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a94a3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 14px center;
+}
+
+select {
+  padding: 0 36px 0 14px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a94a3' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  cursor: pointer;
 }
 
 input:focus,
 select:focus {
-  border-color: var(--accent);
+  border-color: var(--gold);
 }
 
 .page {
-  max-width: 1200px;
+  max-width: var(--max);
   margin: 0 auto;
-  padding: 32px 24px 48px;
+  padding: clamp(32px, 6vw, 64px) var(--gutter) 32px;
+}
+
+.hero {
+  margin-bottom: clamp(24px, 4vw, 40px);
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.live::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--up);
+  animation: pulse 2s infinite;
 }
 
 h1 {
-  font-size: 28px;
-  letter-spacing: -0.02em;
+  margin: 16px 0 12px;
+  background: linear-gradient(180deg, #ffffff, #a9b3c1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: clamp(34px, 6vw, 56px);
+  letter-spacing: -0.03em;
+  line-height: 1.05;
 }
 
-.subtitle {
-  margin: 6px 0 24px;
+.hero p {
+  max-width: 540px;
   color: var(--muted);
+  font-size: clamp(15px, 2vw, 18px);
+  line-height: 1.55;
+}
+
+.overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.card {
+  min-width: 0;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.008)), var(--surface);
+}
+
+.card span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.card strong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  margin-top: 8px;
+  font-size: clamp(18px, 2.4vw, 24px);
+  letter-spacing: -0.01em;
+}
+
+.card img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.card em {
+  font-size: 14px;
+  font-style: normal;
 }
 
 .table-wrap {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--panel);
+  border-radius: 20px;
+  background: var(--surface);
 }
 
 table {
@@ -121,27 +222,47 @@ table {
 }
 
 th {
-  padding: 14px 16px;
+  padding: 16px 14px;
   color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
   text-align: left;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
 td {
-  padding: 12px 16px;
+  padding: 14px;
   border-top: 1px solid var(--line);
   font-variant-numeric: tabular-nums;
+  font-weight: 500;
   white-space: nowrap;
+}
+
+th:first-child,
+td:first-child {
+  padding-left: 24px;
+}
+
+th:last-child,
+td:last-child {
+  padding-right: 24px;
+}
+
+.name {
+  width: 100%;
+  max-width: 0;
+  overflow: hidden;
 }
 
 .num {
   text-align: right;
 }
 
-.muted {
-  color: var(--muted);
+td svg {
+  display: block;
+  margin-left: auto;
 }
 
 tbody tr {
@@ -150,11 +271,11 @@ tbody tr {
 }
 
 tbody tr:hover {
-  background: var(--hover);
+  background: var(--surface-2);
 }
 
 tbody tr:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--gold);
   outline-offset: -2px;
 }
 
@@ -162,23 +283,50 @@ tbody tr:focus-visible {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .coin img {
-  width: 28px;
-  height: 28px;
+  flex: none;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
+}
+
+.coin div {
+  min-width: 0;
 }
 
 .coin b {
   display: block;
+  overflow: hidden;
   font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .coin span {
   color: var(--muted);
   font-size: 13px;
   text-transform: uppercase;
+}
+
+.pill {
+  display: inline-block;
+  min-width: 72px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.pill.up {
+  background: var(--up-soft);
+}
+
+.pill.down {
+  background: var(--down-soft);
 }
 
 .up {
@@ -195,44 +343,71 @@ tbody tr:focus-visible {
   text-align: center;
 }
 
+.footer {
+  padding: 0 var(--gutter) 40px;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.footer a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 dialog {
-  width: min(760px, calc(100vw - 32px));
-  max-height: calc(100vh - 32px);
+  width: min(880px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
   margin: auto;
   padding: 0;
   overflow: auto;
   border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--panel);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
   color: var(--text);
+  animation: rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.72);
-  backdrop-filter: blur(4px);
+  background: rgba(3, 5, 8, 0.72);
+  backdrop-filter: blur(6px);
 }
 
 .sheet {
-  padding: 24px;
+  padding: clamp(20px, 4vw, 32px);
 }
 
 .head {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 }
 
 .head .coin img {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
+}
+
+.head .coin b {
+  font-size: 20px;
 }
 
 .close {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
   border: 0;
-  background: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
   color: var(--muted);
-  font-size: 20px;
+  font-size: 16px;
   cursor: pointer;
+  transition: color 0.15s;
 }
 
 .close:hover {
@@ -241,50 +416,51 @@ dialog::backdrop {
 
 .price {
   display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin: 20px 0 16px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 24px 0 20px;
 }
 
 .price strong {
-  font-size: 34px;
-  letter-spacing: -0.02em;
-}
-
-.price em {
-  font-style: normal;
-  font-weight: 600;
+  font-size: clamp(30px, 6vw, 44px);
+  letter-spacing: -0.03em;
 }
 
 .ranges {
-  display: flex;
-  gap: 4px;
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .ranges button {
-  padding: 6px 14px;
+  padding: 7px 16px;
   border: 0;
-  border-radius: 6px;
+  border-radius: 9px;
   background: none;
   color: var(--muted);
   font: inherit;
   font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
+  transition: color 0.15s, background 0.15s;
 }
 
 .ranges button:hover {
   color: var(--text);
 }
 
-.ranges .on {
-  background: var(--line);
-  color: var(--accent);
+.ranges button.on {
+  background: var(--surface-2);
+  color: var(--gold);
 }
 
 .chart {
   position: relative;
-  height: 280px;
-  margin: 12px 0 24px;
+  height: clamp(220px, 40vw, 340px);
+  margin: 16px 0 28px;
 }
 
 canvas {
@@ -303,22 +479,24 @@ canvas {
 }
 
 .tip b {
+  margin-right: 8px;
   color: var(--text);
 }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1px;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--line);
 }
 
 .stats div {
-  padding: 14px 16px;
-  background: var(--panel);
+  min-width: 0;
+  padding: 16px 18px;
+  background: var(--surface);
 }
 
 dt {
@@ -327,18 +505,56 @@ dt {
 }
 
 dd {
-  margin-top: 4px;
+  margin-top: 6px;
+  font-size: 15px;
   font-weight: 600;
 }
 
-@media (max-width: 900px) {
-  .wide {
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(14, 203, 129, 0.55);
+  }
+
+  70%,
+  100% {
+    box-shadow: 0 0 0 8px rgba(14, 203, 129, 0);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (max-width: 1179px) {
+  .lg {
     display: none;
+  }
+}
+
+@media (max-width: 859px) {
+  .md {
+    display: none;
+  }
+
+  .overview {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }
 
 @media (max-width: 600px) {
   .topbar {
+    position: static;
     flex-direction: column;
     align-items: stretch;
   }
@@ -348,8 +564,50 @@ dd {
     width: auto;
   }
 
-  .page {
-    padding: 24px 16px 40px;
+  .card {
+    padding: 14px 16px;
+  }
+
+  th,
+  td {
+    padding: 14px 8px;
+  }
+
+  th:first-child,
+  td:first-child {
+    padding-left: 16px;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 16px;
+  }
+
+  .coin {
+    gap: 10px;
+  }
+
+  .coin img {
+    width: 28px;
+    height: 28px;
+  }
+
+  .pill {
+    min-width: 64px;
+    padding: 4px 8px;
+  }
+
+  dialog {
+    width: 100%;
+    max-width: none;
+    max-height: 92dvh;
+    margin: auto 0 0;
+    border-bottom: 0;
+    border-radius: 24px 24px 0 0;
+  }
+
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>
@@ -358,8 +616,8 @@ dd {
 <header class="topbar">
   <div class="brand"><span class="mark">₿</span>Crypto Panel</div>
   <div class="controls">
-    <input id="search" type="search" placeholder="Търсене на криптовалута" aria-label="Търсене" autocomplete="off">
-    <select id="currency" aria-label="Валута">
+    <input id="search" type="search" placeholder="Search coins" aria-label="Search coins" autocomplete="off">
+    <select id="currency" aria-label="Currency">
       <option value="usd">USD</option>
       <option value="eur">EUR</option>
       <option value="gbp">GBP</option>
@@ -373,32 +631,37 @@ dd {
   </div>
 </header>
 <main class="page">
-  <h1>Пазар на криптовалути</h1>
-  <p class="subtitle">Топ 100 по пазарна капитализация</p>
+  <section class="hero">
+    <span class="live">Live market data</span>
+    <h1>Crypto Markets</h1>
+    <p>Real-time prices, trends and market capitalization of the 100 largest cryptocurrencies.</p>
+  </section>
+  <section id="overview" class="overview" aria-label="Market overview"></section>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
-          <th>#</th>
-          <th>Име</th>
-          <th class="num">Цена</th>
-          <th class="num">24ч</th>
-          <th class="num wide">Обем (24ч)</th>
-          <th class="num wide">Пазарна капитализация</th>
-          <th class="wide">Последни 7 дни</th>
+          <th>Name</th>
+          <th class="num">Price</th>
+          <th class="num">24h Change</th>
+          <th class="num lg">24h Volume</th>
+          <th class="num md">Market Cap</th>
+          <th class="num md">Last 7 Days</th>
         </tr>
       </thead>
       <tbody id="rows"></tbody>
     </table>
   </div>
-  <p id="status" class="status">Зареждане на пазара...</p>
+  <p id="status" class="status">Loading market data…</p>
 </main>
+<footer class="footer">Market data by <a href="https://www.coingecko.com" target="_blank" rel="noopener">CoinGecko</a></footer>
 <dialog id="detail"></dialog>
 <script>
 const API = 'https://api.coingecko.com/api/v3';
-const RANGES = [['1', '24ч'], ['7', '7д'], ['30', '30д'], ['365', '1г']];
+const RANGES = [['1', '24H'], ['7', '7D'], ['30', '30D'], ['365', '1Y']];
 
 const rows = document.querySelector('#rows');
+const overview = document.querySelector('#overview');
 const notice = document.querySelector('#status');
 const search = document.querySelector('#search');
 const select = document.querySelector('#currency');
@@ -410,8 +673,9 @@ let quote = select.value;
 
 const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 const dir = value => (value >= 0 ? 'up' : 'down');
-const pct = value => `${value >= 0 ? '+' : ''}${(value ?? 0).toFixed(2)}%`;
+const pct = value => `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
 const num = value => (value == null ? '—' : new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 }).format(value));
+const total = key => coins.reduce((sum, coin) => sum + coin[key], 0);
 
 const money = (value, compact = false) => new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -433,7 +697,24 @@ const spark = prices => {
   const path = points
     .map((value, index) => `${((index / (points.length - 1)) * 120).toFixed(1)},${(34 - ((value - min) / span) * 32).toFixed(1)}`)
     .join(' ');
-  return `<svg class="${dir(points.at(-1) - points[0])}" width="120" height="36" viewBox="0 0 120 36" preserveAspectRatio="none"><polyline points="${path}" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`;
+  return `<svg class="${dir(points.at(-1) - points[0])}" width="120" height="36" viewBox="0 0 120 36" preserveAspectRatio="none"><polyline points="${path}" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+};
+
+const mover = coin => `
+  <strong>
+    <img src="${coin.image}" alt="">${coin.symbol.toUpperCase()}
+    <em class="${dir(coin.price_change_percentage_24h)}">${pct(coin.price_change_percentage_24h)}</em>
+  </strong>`;
+
+const renderOverview = () => {
+  const ranked = [...coins].sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
+  const cards = [
+    ['Top 100 market cap', `<strong>${money(total('market_cap'), true)}</strong>`],
+    ['Top 100 volume (24h)', `<strong>${money(total('total_volume'), true)}</strong>`],
+    ['Top gainer (24h)', mover(ranked[0])],
+    ['Top loser (24h)', mover(ranked.at(-1))]
+  ];
+  overview.innerHTML = cards.map(([label, value]) => `<div class="card"><span>${label}</span>${value}</div>`).join('');
 };
 
 const render = () => {
@@ -441,27 +722,28 @@ const render = () => {
   const list = coins.filter(coin => coin.name.toLowerCase().includes(query) || coin.symbol.includes(query));
   rows.innerHTML = list.map(coin => `
     <tr data-id="${coin.id}" tabindex="0">
-      <td class="muted">${coin.market_cap_rank}</td>
-      <td>${coinCell(coin)}</td>
+      <td class="name">${coinCell(coin)}</td>
       <td class="num">${money(coin.current_price)}</td>
-      <td class="num ${dir(coin.price_change_percentage_24h)}">${pct(coin.price_change_percentage_24h)}</td>
-      <td class="num wide">${money(coin.total_volume, true)}</td>
-      <td class="num wide">${money(coin.market_cap, true)}</td>
-      <td class="wide">${spark(coin.sparkline_in_7d?.price ?? [])}</td>
+      <td class="num"><span class="pill ${dir(coin.price_change_percentage_24h)}">${pct(coin.price_change_percentage_24h)}</span></td>
+      <td class="num lg">${money(coin.total_volume, true)}</td>
+      <td class="num md">${money(coin.market_cap, true)}</td>
+      <td class="num md">${spark(coin.sparkline_in_7d?.price ?? [])}</td>
     </tr>`).join('');
-  notice.textContent = list.length ? '' : 'Няма намерени криптовалути.';
+  notice.textContent = list.length ? '' : 'No coins match your search.';
 };
 
 const load = async () => {
   try {
     const response = await fetch(`${API}/coins/markets?vs_currency=${select.value}&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=24h`);
     if (!response.ok) throw new Error(response.status);
-    coins = await response.json();
+    const data = await response.json();
+    coins = data.map(coin => ({ ...coin, price_change_percentage_24h: coin.price_change_percentage_24h ?? 0 }));
     quote = select.value;
+    renderOverview();
     render();
   } catch {
     select.value = quote;
-    notice.textContent = 'Данните не могат да бъдат заредени. Опитай отново след малко.';
+    notice.textContent = 'Unable to load market data. Please try again shortly.';
   }
 };
 
@@ -486,6 +768,16 @@ const drawChart = hover => {
   fill.addColorStop(0, `${color}44`);
   fill.addColorStop(1, `${color}00`);
 
+  ctx.strokeStyle = css('--line');
+  ctx.lineWidth = 1;
+  for (let step = 0; step < 4; step += 1) {
+    const gridY = 16 + (step * (height - 32)) / 3;
+    ctx.beginPath();
+    ctx.moveTo(0, gridY);
+    ctx.lineTo(width, gridY);
+    ctx.stroke();
+  }
+
   ctx.beginPath();
   values.forEach((value, index) => (index ? ctx.lineTo(x(index), y(value)) : ctx.moveTo(x(index), y(value))));
   ctx.strokeStyle = color;
@@ -505,20 +797,23 @@ const drawChart = hover => {
   ctx.beginPath();
   ctx.moveTo(x(hover), 0);
   ctx.lineTo(x(hover), height);
-  ctx.strokeStyle = css('--line');
+  ctx.strokeStyle = css('--muted');
   ctx.lineWidth = 1;
   ctx.stroke();
   ctx.beginPath();
   ctx.arc(x(hover), y(values[hover]), 5, 0, Math.PI * 2);
   ctx.fillStyle = color;
   ctx.fill();
-  const time = new Date(chart[hover][0]).toLocaleString('bg-BG', { dateStyle: 'medium', timeStyle: 'short' });
-  tip.innerHTML = `<b>${money(values[hover])}</b> ${time}`;
+  ctx.strokeStyle = css('--surface');
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  const time = new Date(chart[hover][0]).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+  tip.innerHTML = `<b>${money(values[hover])}</b>${time}`;
 };
 
 const loadChart = async (id, days) => {
   const tip = detail.querySelector('.tip');
-  tip.textContent = 'Зареждане на графиката...';
+  tip.textContent = 'Loading chart…';
   try {
     const response = await fetch(`${API}/coins/${id}/market_chart?vs_currency=${quote}&days=${days}`);
     if (!response.ok) throw new Error(response.status);
@@ -526,21 +821,21 @@ const loadChart = async (id, days) => {
     drawChart();
   } catch {
     chart = [];
-    tip.textContent = 'Графиката не е налична в момента. Опитай отново след малко.';
+    tip.textContent = 'Chart is unavailable right now. Please try again shortly.';
   }
 };
 
 const stats = coin => {
   const symbol = coin.symbol.toUpperCase();
   return [
-    ['Класация', `#${coin.market_cap_rank}`],
-    ['Пазарна капитализация', money(coin.market_cap, true)],
-    ['Обем (24ч)', money(coin.total_volume, true)],
-    ['Най-висока цена (24ч)', money(coin.high_24h)],
-    ['Най-ниска цена (24ч)', money(coin.low_24h)],
-    ['Рекордна цена', money(coin.ath)],
-    ['В обращение', `${num(coin.circulating_supply)} ${symbol}`],
-    ['Максимално количество', coin.max_supply ? `${num(coin.max_supply)} ${symbol}` : '∞']
+    ['Rank', `#${coin.market_cap_rank}`],
+    ['Market cap', money(coin.market_cap, true)],
+    ['24h volume', money(coin.total_volume, true)],
+    ['24h high', money(coin.high_24h)],
+    ['24h low', money(coin.low_24h)],
+    ['All-time high', money(coin.ath)],
+    ['Circulating supply', `${num(coin.circulating_supply)} ${symbol}`],
+    ['Max supply', coin.max_supply ? `${num(coin.max_supply)} ${symbol}` : '∞']
   ];
 };
 
@@ -550,10 +845,10 @@ const openDetail = id => {
   detail.dataset.id = id;
   detail.innerHTML = `
     <div class="sheet">
-      <div class="head">${coinCell(coin)}<button class="close" aria-label="Затвори">✕</button></div>
+      <div class="head">${coinCell(coin)}<button class="close" aria-label="Close">✕</button></div>
       <div class="price">
         <strong>${money(coin.current_price)}</strong>
-        <em class="${dir(coin.price_change_percentage_24h)}">${pct(coin.price_change_percentage_24h)}</em>
+        <span class="pill ${dir(coin.price_change_percentage_24h)}">${pct(coin.price_change_percentage_24h)}</span>
       </div>
       <div class="ranges">${RANGES.map(([days, label], index) => `<button data-days="${days}"${index ? '' : ' class="on"'}>${label}</button>`).join('')}</div>
       <div class="chart"><canvas></canvas><p class="tip"></p></div>
@@ -573,7 +868,7 @@ rows.addEventListener('keydown', event => event.key === 'Enter' && pick(event));
 search.addEventListener('input', render);
 
 select.addEventListener('change', () => {
-  notice.textContent = 'Обновяване...';
+  notice.textContent = 'Updating…';
   load();
 });
 
