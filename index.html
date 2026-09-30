@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#07090c">
+<meta name="theme-color" content="#000000">
 <title>Crypto Panel</title>
 <style>
 :root {
-  --bg: #07090c;
-  --surface: #0e1218;
-  --surface-2: #151b24;
+  --bg: #000000;
+  --surface-2: #121212;
   --line: rgba(255, 255, 255, 0.07);
   --text: #f4f6f8;
   --muted: #8a94a3;
@@ -31,11 +30,7 @@
 
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(900px 480px at 12% -8%, rgba(230, 194, 102, 0.11), transparent 60%),
-    radial-gradient(800px 460px at 100% 0, rgba(14, 203, 129, 0.07), transparent 55%),
-    var(--bg);
-  background-repeat: no-repeat;
+  background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
 }
@@ -48,49 +43,31 @@ body:has(dialog[open]) {
   position: sticky;
   top: 0;
   z-index: 5;
-  display: flex;
-  gap: 10px;
-  padding: 14px max(var(--gutter), calc((100% - var(--max)) / 2 + var(--gutter)));
-  border-bottom: 1px solid var(--line);
-  background: rgba(7, 9, 12, 0.72);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  backdrop-filter: blur(18px) saturate(140%);
-}
-
-input,
-select {
-  height: 42px;
-  border: 1px solid var(--line);
-  border-radius: 0;
-  outline: none;
-  background-color: var(--surface);
-  color: var(--text);
-  font: inherit;
-  font-size: 14px;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  padding: 12px 0;
+  background: var(--bg);
 }
 
 input {
-  flex: 1;
-  min-width: 0;
+  display: block;
+  width: 100%;
+  height: 48px;
+  padding: 0 16px 0 44px;
+  border: solid var(--line);
+  border-width: 1px 0;
+  border-radius: 0;
+  outline: none;
   appearance: none;
-  padding: 0 14px 0 40px;
+  background-color: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a94a3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: 14px center;
+  background-position: 16px center;
 }
 
-select {
-  padding: 0 36px 0 14px;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a94a3' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  cursor: pointer;
-}
-
-input:focus,
-select:focus {
+input:focus {
   border-color: var(--silver);
   box-shadow: 0 0 0 3px rgba(213, 218, 226, 0.14);
 }
@@ -105,7 +82,7 @@ select:focus {
   overflow-x: auto;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: var(--surface);
+  background: var(--bg);
 }
 
 table {
@@ -150,13 +127,19 @@ td svg {
 
 tbody tr {
   cursor: pointer;
+  outline: none;
   transition: background 0.15s;
 }
 
-tbody tr:hover,
-tbody tr:focus-visible {
-  background: var(--surface-2);
-  outline: none;
+@media (hover: hover) {
+  tbody tr:hover {
+    background: var(--surface-2);
+  }
+}
+
+button,
+tbody tr {
+  -webkit-tap-highlight-color: transparent;
 }
 
 .coin {
@@ -223,39 +206,23 @@ tbody tr:focus-visible {
   text-align: center;
 }
 
-.footer {
-  padding: 0 var(--gutter) 40px;
-  color: var(--muted);
-  font-size: 13px;
-  text-align: center;
-}
-
-.footer a {
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
 dialog {
-  width: min(880px, calc(100vw - 32px));
-  max-height: calc(100dvh - 32px);
-  margin: auto;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  max-height: none;
+  margin: 0;
   padding: 0;
   overflow: auto;
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  background: var(--surface);
-  box-shadow: 0 40px 120px rgba(0, 0, 0, 0.6);
+  border: 0;
+  background: var(--bg);
   color: var(--text);
   animation: rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-dialog::backdrop {
-  background: rgba(3, 5, 8, 0.72);
-  backdrop-filter: blur(6px);
-}
-
 .sheet {
+  max-width: 880px;
+  margin: 0 auto;
   padding: clamp(20px, 4vw, 32px);
 }
 
@@ -281,15 +248,10 @@ dialog::backdrop {
   width: 36px;
   height: 36px;
   border: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--muted);
-  cursor: pointer;
-  transition: color 0.15s;
-}
-
-.back:hover {
+  outline: none;
+  background: none;
   color: var(--text);
+  cursor: pointer;
 }
 
 .price {
@@ -312,7 +274,8 @@ dialog::backdrop {
 }
 
 .ranges {
-  display: inline-flex;
+  display: flex;
+  flex: 1;
   gap: 2px;
   padding: 4px;
   border-radius: 12px;
@@ -333,7 +296,8 @@ dialog::backdrop {
 }
 
 .ranges button {
-  padding: 7px 16px;
+  flex: 1;
+  padding: 9px 0;
   border: 0;
   border-radius: 9px;
   background: none;
@@ -399,7 +363,7 @@ canvas {
 .stats div {
   min-width: 0;
   padding: 16px 18px;
-  background: var(--surface);
+  background: var(--bg);
 }
 
 dt {
@@ -466,15 +430,6 @@ dd {
     padding: 4px 8px;
   }
 
-  dialog {
-    width: 100%;
-    max-width: none;
-    max-height: 92dvh;
-    margin: auto 0 0;
-    border-bottom: 0;
-    border-radius: 24px 24px 0 0;
-  }
-
   .stats {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -484,17 +439,6 @@ dd {
 <body>
 <header class="topbar">
   <input id="search" type="search" aria-label="Search coins" autocomplete="off">
-  <select id="currency" aria-label="Currency">
-    <option value="usd">USD</option>
-    <option value="eur">EUR</option>
-    <option value="gbp">GBP</option>
-    <option value="chf">CHF</option>
-    <option value="jpy">JPY</option>
-    <option value="cad">CAD</option>
-    <option value="aud">AUD</option>
-    <option value="try">TRY</option>
-    <option value="pln">PLN</option>
-  </select>
 </header>
 <main class="page">
   <div class="table-wrap">
@@ -504,10 +448,10 @@ dd {
   </div>
   <p id="status" class="status">Loading market data…</p>
 </main>
-<footer class="footer">Market data by <a href="https://www.coingecko.com" target="_blank" rel="noopener">CoinGecko</a></footer>
 <dialog id="detail"></dialog>
 <script>
 const API = 'https://api.coingecko.com/api/v3';
+const quote = 'usd';
 const RANGES = [['1', '24H'], ['7', '7D'], ['30', '30D'], ['365', '1Y']];
 
 const svg = path => `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
@@ -521,14 +465,12 @@ const ICONS = {
 const rows = document.querySelector('#rows');
 const notice = document.querySelector('#status');
 const search = document.querySelector('#search');
-const select = document.querySelector('#currency');
 const detail = document.querySelector('#detail');
 
 const view = { id: '', days: RANGES[0][0], candles: false };
 
 let coins = [];
 let chart = [];
-let quote = select.value;
 let ticket = 0;
 
 const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -581,14 +523,12 @@ const render = () => {
 
 const load = async () => {
   try {
-    const response = await fetch(`${API}/coins/markets?vs_currency=${select.value}&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=24h`);
+    const response = await fetch(`${API}/coins/markets?vs_currency=${quote}&order=market_cap_desc&per_page=100&page=1&sparkline=true&price_change_percentage=24h`);
     if (!response.ok) throw new Error(response.status);
     const data = await response.json();
     coins = data.map(coin => ({ ...coin, price_change_percentage_24h: coin.price_change_percentage_24h ?? 0 }));
-    quote = select.value;
     render();
   } catch {
-    select.value = quote;
     notice.textContent = 'Unable to load market data. Please try again shortly.';
   }
 };
@@ -677,7 +617,7 @@ const drawChart = hover => {
     ctx.arc(x(hover), y(upper[hover]), 5, 0, Math.PI * 2);
     ctx.fillStyle = color;
     ctx.fill();
-    ctx.strokeStyle = css('--surface');
+    ctx.strokeStyle = css('--bg');
     ctx.lineWidth = 2;
     ctx.stroke();
   }
@@ -748,13 +688,8 @@ rows.addEventListener('click', pick);
 rows.addEventListener('keydown', event => event.key === 'Enter' && pick(event));
 search.addEventListener('input', render);
 
-select.addEventListener('change', () => {
-  notice.textContent = 'Updating…';
-  load();
-});
-
 detail.addEventListener('click', event => {
-  if (event.target === detail || event.target.closest('.back')) {
+  if (event.target.closest('.back')) {
     detail.close();
     return;
   }
