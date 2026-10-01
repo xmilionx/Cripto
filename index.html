@@ -33,6 +33,9 @@ body {
   background: var(--bg);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 body:has(dialog[open]) {
@@ -43,7 +46,7 @@ body:has(dialog[open]) {
   position: sticky;
   top: 0;
   z-index: 5;
-  padding: 12px var(--gutter);
+  padding: 12px var(--gutter) 8px;
   background: var(--bg);
 }
 
@@ -53,13 +56,15 @@ input {
   height: 48px;
   padding: 0 16px 0 44px;
   border: 1px solid var(--line);
-  border-radius: 0;
+  border-radius: 14px;
   outline: none;
   appearance: none;
   background-color: var(--bg);
   color: var(--text);
   font: inherit;
   font-size: 16px;
+  -webkit-user-select: text;
+  user-select: text;
   transition: border-color 0.15s, box-shadow 0.15s;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a94a3' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -74,7 +79,7 @@ input:focus {
 .page {
   max-width: var(--max);
   margin: 0 auto;
-  padding: 24px var(--gutter) 32px;
+  padding: 8px var(--gutter) 32px;
 }
 
 .table-wrap {
@@ -148,11 +153,13 @@ tbody tr {
   min-width: 0;
 }
 
-.coin img {
+.coin img,
+.coin i {
   flex: none;
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  pointer-events: none;
 }
 
 .coin div {
@@ -177,20 +184,13 @@ tbody tr {
   display: block;
   height: 14px;
   border-radius: 7px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.11) 50%, rgba(255, 255, 255, 0.05) 75%) 0 0 / 200% 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.07) 25%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.07) 75%) 0 0 / 200% 100%;
   animation: shimmer 1.4s linear infinite;
 }
 
 .skeleton .num .bone {
   width: 72px;
   margin-left: auto;
-}
-
-.skeleton .coin i {
-  flex: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
 }
 
 .skeleton .coin b {
@@ -243,6 +243,7 @@ dialog {
   margin: 0;
   padding: 0;
   overflow: auto;
+  overscroll-behavior: contain;
   border: 0;
   background: var(--bg);
   color: var(--text);
@@ -276,6 +277,7 @@ dialog {
   place-items: center;
   width: 36px;
   height: 36px;
+  margin-left: -9px;
   border: 0;
   outline: none;
   background: none;
@@ -338,9 +340,11 @@ dialog {
   transition: color 0.15s, background 0.15s;
 }
 
-.ranges button:hover,
-.mode:hover {
-  color: var(--text);
+@media (hover: hover) {
+  .ranges button:hover,
+  .mode:hover {
+    color: var(--text);
+  }
 }
 
 .ranges button.on,
@@ -359,30 +363,15 @@ canvas {
   display: block;
   width: 100%;
   height: 100%;
-}
-
-.chart.loading::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 28px;
-  height: 28px;
-  margin: -14px 0 0 -14px;
-  border: 3px solid rgba(255, 255, 255, 0.12);
-  border-top-color: var(--silver);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-.chart.loading canvas {
-  opacity: 0.25;
+  touch-action: none;
 }
 
 .tip {
   position: absolute;
   top: 0;
   left: 0;
+  padding-right: 8px;
+  background: var(--bg);
   color: var(--muted);
   font-size: 13px;
   pointer-events: none;
@@ -400,7 +389,7 @@ canvas {
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 8px;
 }
 
 .stats div {
@@ -434,15 +423,8 @@ dd {
   }
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::after {
+  * {
     animation: none !important;
     transition: none !important;
   }
@@ -458,6 +440,10 @@ dd {
   .md {
     display: none;
   }
+
+  td:nth-child(3) {
+    padding-right: 24px;
+  }
 }
 
 @media (max-width: 600px) {
@@ -469,7 +455,7 @@ dd {
     padding-left: 16px;
   }
 
-  td:last-child {
+  td:nth-child(3) {
     padding-right: 16px;
   }
 
@@ -477,7 +463,8 @@ dd {
     gap: 10px;
   }
 
-  .coin img {
+  .coin img,
+  .coin i {
     width: 28px;
     height: 28px;
   }
@@ -505,7 +492,7 @@ dd {
   </div>
   <p id="status" class="status"></p>
 </main>
-<dialog id="detail"></dialog>
+<dialog id="detail" aria-label="Coin details"></dialog>
 <script>
 const API = 'https://api.coingecko.com/api/v3';
 const quote = 'usd';
@@ -535,16 +522,16 @@ const dir = value => (value >= 0 ? 'up' : 'down');
 const pct = value => `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
 const num = value => (value == null ? '—' : new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 }).format(value));
 
-const money = (value, compact = false) => new Intl.NumberFormat('en-US', {
+const money = (value, compact = false) => (value == null ? '—' : new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: quote.toUpperCase(),
   notation: compact ? 'compact' : 'standard',
   maximumFractionDigits: compact || value >= 1 ? 2 : 6
-}).format(value);
+}).format(value));
 
 const coinCell = coin => `
   <div class="coin">
-    <img src="${coin.image}" alt="" loading="lazy">
+    <img src="${coin.image}" alt="" draggable="false" loading="lazy">
     <div><b>${coin.name}</b><span>${coin.symbol}</span></div>
   </div>`;
 
@@ -604,7 +591,8 @@ const load = async () => {
 
 const pointText = index => {
   const point = chart[index];
-  const time = new Date(point[0]).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+  const format = view.days === '365' ? { dateStyle: 'medium' } : { dateStyle: 'medium', timeStyle: 'short' };
+  const time = new Date(point[0]).toLocaleString('en-US', format);
   if (!view.candles) return `<b>${money(point[1])}</b>${time}`;
   const [, open, high, low, close] = point;
   return `<b>${money(close)}</b>${time}<br><span>O ${money(open)}</span><span>H ${money(high)}</span><span>L ${money(low)}</span>`;
@@ -694,12 +682,10 @@ const drawChart = hover => {
 };
 
 const loadChart = async () => {
-  const box = detail.querySelector('.chart');
   const tip = detail.querySelector('.tip');
   const request = ++ticket;
   chart = [];
   tip.textContent = '';
-  box.classList.add('loading');
   try {
     const path = view.candles ? 'ohlc' : 'market_chart';
     const response = await fetch(`${API}/coins/${view.id}/${path}?vs_currency=${quote}&days=${view.days}`);
@@ -712,8 +698,6 @@ const loadChart = async () => {
     if (request !== ticket) return;
     chart = [];
     tip.textContent = 'Chart is unavailable right now. Please try again shortly.';
-  } finally {
-    if (request === ticket) box.classList.remove('loading');
   }
 };
 
@@ -768,6 +752,7 @@ detail.addEventListener('click', event => {
   }
   const range = event.target.closest('[data-days]');
   if (range) {
+    if (range.dataset.days === view.days) return;
     detail.querySelectorAll('[data-days]').forEach(item => item.classList.toggle('on', item === range));
     view.days = range.dataset.days;
     loadChart();
@@ -781,11 +766,14 @@ detail.addEventListener('click', event => {
   }
 });
 
-detail.addEventListener('pointermove', event => {
+const scrub = event => {
   if (event.target.tagName !== 'CANVAS' || !chart.length) return;
   const box = event.target.getBoundingClientRect();
   drawChart(indexAt((event.clientX - box.left) / box.width));
-});
+};
+
+detail.addEventListener('pointerdown', scrub);
+detail.addEventListener('pointermove', scrub);
 
 detail.addEventListener('pointerout', event => {
   if (event.target.tagName === 'CANVAS' && chart.length) drawChart();
@@ -793,7 +781,7 @@ detail.addEventListener('pointerout', event => {
 
 rows.innerHTML = SKELETON;
 load();
-setInterval(load, 60000);
+setInterval(() => document.hidden || load(), 60000);
 </script>
 </body>
 </html>
